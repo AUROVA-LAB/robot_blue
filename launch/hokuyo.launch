@@ -1,0 +1,12 @@
+<launch>
+
+  <node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node" output="screen"/>
+
+  <param name="hokuyo_node/calibrate_time"  value="false" />
+
+  <param name="hokuyo_node/port"  value="/dev/ttyACM1" />
+  
+<!--
+  <node pkg="rviz" type="rviz" name="rviz"/>
+-->
+</launch>
