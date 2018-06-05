@@ -1,0 +1,5 @@
+<launch>
+
+<include file="/home/aurova/iri-lab/iri_ws/src/velodyne/velodyne_pointcloud/launch/VLP16_points.launch" />
+
+</launch>

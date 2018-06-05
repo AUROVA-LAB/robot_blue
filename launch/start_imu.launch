@@ -1,0 +1,11 @@
+
+<launch>
+
+  <node pkg="um7" type="um7_driver" name="um7_driver" output="screen">
+
+    <param name="port"  value="/dev/imu" />
+
+  </node>
+
+</launch>
+

@@ -1,0 +1,13 @@
+
+<launch>
+
+<include file="/home/aurova/iri-lab/iri_ws/src/ublox/ublox_gps/launch/ublox_device.launch">
+
+  <arg name="node_name" value="rover"/>
+
+  <arg name="param_file_name" value="blue_rover"/>
+
+</include>
+
+</launch>
+

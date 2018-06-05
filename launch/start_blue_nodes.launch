@@ -1,0 +1,13 @@
+<launch>
+
+<include file="/home/aurova/iri-lab/iri_ws/src/blue_package/launch/start_velodyne.launch" />
+
+<include file="/home/aurova/iri-lab/iri_ws/src/blue_package/launch/start_hokuyo.launch" />
+
+<include file="/home/aurova/iri-lab/iri_ws/src/blue_package/launch/start_imu.launch" />
+
+<include file="/home/aurova/iri-lab/iri_ws/src/blue_package/launch/start_arduino.launch" />
+
+<include file="/home/aurova/iri-lab/iri_ws/src/blue_package/launch/start_ublox.launch" />
+
+</launch>
