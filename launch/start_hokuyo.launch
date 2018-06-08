@@ -1,6 +1,6 @@
 <launch>
 
-  <node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node" output="screen">
+  <node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node">
 
     <param name="hokuyo_node/calibrate_time"  value="false" />
 
