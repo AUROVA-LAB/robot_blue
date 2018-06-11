@@ -2,7 +2,8 @@
 #include "ros/ros.h"
 #include "ackermann_msgs/AckermannDriveStamped.h"
 #include "nav_msgs/Odometry.h"
-#include <tf/tf.h>
+#include <tf/transform_broadcaster.h>
+//#include <tf/tf.h>
 #include <time.h>
 
 double covariance;
@@ -32,8 +33,13 @@ int main (int argc, char** argv) {
 	double t_1;
 	double t_2;
 
+
+
   ros::init (argc, argv, "ackermann_to_odom");
   ros::NodeHandle nh;
+
+	geometry_msgs::TransformStamped odom_trans;
+	static tf::TransformBroadcaster broadcaster;
 
   //// PUBLISHER
   nav_msgs::Odometry odometry;
@@ -112,9 +118,18 @@ int main (int argc, char** argv) {
 			odometry.pose.covariance[i*ROWS+i] = covariance;
 		}
 
+    // tf mensaje
+		odom_trans.header.frame_id         = "odom";
+    odom_trans.child_frame_id          = "base_link";
+		odom_trans.header.stamp            = ros::Time::now();
+    odom_trans.transform.translation.x = pose_x;
+    odom_trans.transform.translation.y = pose_y;
+    odom_trans.transform.translation.z = 0.0;
+    odom_trans.transform.rotation      = tf::createQuaternionMsgFromYaw(orientation_z);
 
 		// Topic publisher
 	  odometry_publisher.publish(odometry);
+		//broadcaster.sendTransform(odom_trans);
 	  //odometry_publisher.publish(&odometry);
 
 	  ros::spinOnce();

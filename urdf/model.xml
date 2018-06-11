@@ -18,7 +18,7 @@
 
 </link>
 
-<link name='Velodyne'>
+<link name='velodyne'>
 
   <visual name='visual'>
     <geometry>
@@ -34,7 +34,7 @@
   
 </link>
 
-<link name='hokuyo'>
+<link name='laser'>
 
   <visual name='visual'>
     <geometry>
@@ -69,13 +69,19 @@
 
 <joint name="base_to_velo" type="fixed">
   <parent link="base_link"/>
-  <child link="Velodyne"/>
+  <child link="velodyne"/>
+  <origin rpy="0.0 0.0 0.0" xyz="0.55 0.0 0.645"/>
+</joint>
+
+<joint name="velo_to_base" type="fixed">
+  <parent link="velodyne"/>
+  <child link="base_link"/>
   <origin rpy="0.0 0.0 0.0" xyz="0.55 0.0 0.645"/>
 </joint>
 
 <joint name="base_to_hokuyo" type="fixed">
   <parent link="base_link"/>
-  <child link="hokuyo"/>
+  <child link="laser"/>
   <origin rpy="0.0 0.15 0.0" xyz="1.05 0.0 0.187"/>
 </joint>
 
