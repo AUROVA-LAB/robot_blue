@@ -18,6 +18,8 @@
 
 </link>
 
+<link name="gps"/>
+
 <link name='velodyne'>
 
   <visual name='visual'>
@@ -50,7 +52,7 @@
   
 </link>
 
-<link name="imu">
+<link name="imu_link">
 
   <visual name='visual'>
     <geometry>
@@ -70,7 +72,7 @@
 <joint name="base_to_velo" type="fixed">
   <parent link="base_link"/>
   <child link="velodyne"/>
-  <origin rpy="0.0 0.0 0.0" xyz="0.55 0.0 0.645"/>
+  <origin rpy="0.0 0.0 -0.005" xyz="0.55 0.0 0.645"/>
 </joint>
 
 <joint name="base_to_hokuyo" type="fixed">
@@ -81,8 +83,22 @@
 
 <joint name="base_to_imu" type="fixed">
   <parent link="base_link"/>
-  <child link="imu"/>
+  <child link="imu_link"/>
   <origin rpy="0.0 0.0 0.0" xyz="-0.13 0.0 -0.025"/>
+</joint>
+
+<!--
+<joint name="gps_to_base" type="fixed">
+  <parent link="gps"/>
+  <child link="base_link"/>
+  <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+</joint>
+-->
+
+<joint name="base_to_gps" type="fixed">
+  <parent link="base_link"/>
+  <child link="gps"/>
+  <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
 </joint>
 
 

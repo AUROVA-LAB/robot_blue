@@ -130,16 +130,16 @@ int main (int argc, char** argv) {
       base_trans.transform.translation.x = 0.55;
       base_trans.transform.translation.y = 0.0;
       base_trans.transform.translation.z = 0.0;
-      base_trans.transform.rotation      = tf::createQuaternionMsgFromYaw(0.0);
+      base_trans.transform.rotation      = tf::createQuaternionMsgFromYaw(-0.005);
       ////////////////////////////////////////////////////////////////
 
       // Topic publisher
-	  odometry_publisher.publish(odometry);
+      odometry_publisher.publish(odometry);
       broadcaster.sendTransform(odom_trans);
       broadcaster.sendTransform(base_trans);
 
-	  ros::spinOnce();
-	  loop_rate.sleep();
+      ros::spinOnce();
+      loop_rate.sleep();
   }
 
   return 0;
