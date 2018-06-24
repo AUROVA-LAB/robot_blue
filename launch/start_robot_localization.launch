@@ -7,11 +7,11 @@
 <launch>
     <param name="/use_sim_time" value="true" />
 
-    <node pkg="rosbag" type="play" name="rosbagplay" args="/home/mice85/AUROVA/Local/Datasets/AUROVA/2018-06-21\ experimentos/2018-06-21_1.bag --clock -d 5" required="true"/>
+    <node pkg="rosbag" type="play" name="rosbagplay" args="/home/mice85/AUROVA/local/2018-06-21\ experimentos/2018-06-21_1.bag --clock -d 5" required="true"/>
 
     <node name="ekf_odom" pkg="robot_localization" type="ekf_localization_node" clear_params="true">
 
-      <param name="frequency" value="30"/>
+      <param name="frequency" value="10"/>
       <param name="sensor_timeout" value="0.1"/>
       <param name="two_d_mode" value="false"/>
 
@@ -36,7 +36,7 @@
                                      false, false, false,
                                      false, false, false,
                                      false, false, true,
-                                     false, false, false]</rosparam>
+                                     false, false, false,]</rosparam>
 
       <param name="odom0_differential" value="false"/>
       <param name="imu0_differential" value="false"/>
@@ -87,10 +87,10 @@
                                                      0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]</rosparam>
 
     </node>
-
+<!--
     <node name="ekf_map" pkg="robot_localization" type="ekf_localization_node" clear_params="true">
 
-      <param name="frequency" value="30"/>
+      <param name="frequency" value="10"/>
       <param name="sensor_timeout" value="0.1"/>
       <param name="two_d_mode" value="false"/>
 
@@ -112,9 +112,9 @@
                                       false, false, false,
                                       false, false, false]</rosparam>
 
-      <rosparam param="odom1_config">[true,  true,  false,
+      <rosparam param="odom1_config">[true, true, false,
                                       false, false, false,
-                                      true,  true,  false,
+                                      false, false, false,
                                       false, false, false,
                                       false, false, false]</rosparam>
 
@@ -122,7 +122,7 @@
                                      false, false, false,
                                      false, false, false,
                                      false, false, true,
-                                     false, false, false]</rosparam>
+                                     false, false, false,]</rosparam>
 
       <param name="odom0_differential" value="false"/>
       <param name="odom1_differential" value="false"/>
@@ -180,13 +180,13 @@
     
     <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform" respawn="true" output="screen">
         
-        <param name="frequency" value="30" />
+        <param name="frequency" value="10" />
         <param name="delay" value="3" />
 
 
-        <param name="magnetic_declination_radians" value="0.25772695287784" />
+        <param name="magnetic_declination_radians" value="0.25772695287784" />  
 
-        <param name="yaw_offset" value="1.5707963267949" />
+        <param name="yaw_offset" value="3.141592654" />
 
         <param name="zero_altitude" value="true" />
 
@@ -200,8 +200,8 @@
 
         <remap from="odometry/filtered" to="odometry/filtered_map"/>
         <remap from="gps/fix" to="rover/fix"/>
+        <remap from="imu/data" to="imu_data"/>
 
     </node>
-
-
+-->
 </launch>
