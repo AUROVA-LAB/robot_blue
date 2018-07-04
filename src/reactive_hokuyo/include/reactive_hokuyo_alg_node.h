@@ -24,9 +24,12 @@ private:
 	// Input
 	bool flag_new_hokuyo_data_;
 	sensor_msgs::LaserScan input_scan_;
+	sensor_msgs::LaserScan local_copy_of_input_scan_;
 
 	// Point cloud to convert to 3D using the sensor pose
 	pcl::PCLPointCloud2 real_3D_cloud_;
+	pcl::PCLPointCloud2 obstacle_points_;
+	pcl::PCLPointCloud2 final_obstacles_;
 
 	// Configurable safety parameters
 	float time_to_reach_min_allowed_distance_;
@@ -41,11 +44,10 @@ private:
 	float min_obstacle_radius_;
 
 	// Values to compute output
-	float closer_obstacle_point_;
+	float closest_obstacle_point_;
 
 	// Node output
 	float max_velocity_recommendation_;
-
 
     // [subscriber attributes]
     ros::Subscriber hokuyo_subscriber_;
@@ -54,6 +56,9 @@ private:
     void hokuyo_mutex_enter(void);
     void hokuyo_mutex_exit(void);
 
+    // [publisher attributes]
+    ros::Publisher recommended_velocity_publisher_;
+    std_msgs::Float32 recommended_velocity_msg_;
 
 public:
 

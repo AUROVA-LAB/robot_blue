@@ -1,4 +1,5 @@
 #include "reactive_hokuyo_alg_node.h"
+#include "reactive_hokuyo_alg.h"
 
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
@@ -24,31 +25,65 @@ ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode (void) :
 	euclidean_association_threshold_ = 0.10;
 	min_obstacle_radius_             = 0.02;
 
-	closer_obstacle_point_ = IMPOSSIBLE_RANGE_VALUE_;
+	closest_obstacle_point_ = IMPOSSIBLE_RANGE_VALUE_;
 
 	max_velocity_recommendation_ = STOP_VEHICLE_;
+
+	this->loop_rate_ = 500;
+
+	// Init subscribers
+	this->hokuyo_subscriber_ = this->public_node_handle_.subscribe ("/scan", 1, &ReactiveHokuyoAlgNode::hokuyo_callback, this);
+
+	pthread_mutex_init (&this->hokuyo_mutex_, NULL);
+
+	// Init publishers
+	this->recommended_velocity_publisher_ = this->public_node_handle_.advertise
+	      < std_msgs::Float32 > ("hokuyo_recommended_velocity", 1);
 
 }
 
 void ReactiveHokuyoAlgNode::mainNodeThread(void)
 {
+	this->hokuyo_mutex_enter();
+	if(flag_new_hokuyo_data_)
+	{
+		flag_new_hokuyo_data_ = false;
+		local_copy_of_input_scan_ = input_scan_;
+		this->hokuyo_mutex_exit();
 
+		this->alg_.incorporateSensorPoseInformation(local_copy_of_input_scan_, SENSOR_HEIGHT_, SENSOR_PITCH_DEG_ANGLE_, real_3D_cloud_);
 
+		this->alg_.filterNonObstaclePoints(real_3D_cloud_, z_threshold_, obstacle_points_);
+
+		this->alg_.eliminateSmallClusters(obstacle_points_, euclidean_association_threshold_, min_obstacle_radius_, final_obstacles_);
+
+		this->alg_.findClosestDistance(final_obstacles_, closest_obstacle_point_);
+
+		max_velocity_recommendation_ = ( closest_obstacle_point_ - safety_distance_to_stop_vehicle_ ) / time_to_reach_min_allowed_distance_;
+
+		recommended_velocity_msg_.data = max_velocity_recommendation_;
+
+		this->recommended_velocity_publisher_.publish (this->recommended_velocity_msg_);
+	}else{
+		this->hokuyo_mutex_exit();
+	}
 }
 
 
 void ReactiveHokuyoAlgNode::hokuyo_callback (const sensor_msgs::LaserScan::ConstPtr& msg)
 {
   this->hokuyo_mutex_enter ();
-  input_scan_ = *msg;
 
-  //DEBUG!!
-  if (msg == NULL) std::cout << std::endl << "Null pointer!!! in function hokuyo_callback!";
+  if(strcmp(msg->header.frame_id, "Laser") == 0)
+  {
+	  input_scan_ = *msg;
 
-  flag_new_hokuyo_data_ = true;
+	  //DEBUG!!
+	  std::cout << "Hokuyo scan received!" << std::endl;
+	  if (msg == NULL) std::cout << std::endl << "Null pointer!!! in function hokuyo_callback!";
 
-  //number_of_point_clouds_received++;
-  //std::cout << "Total velodyne msgs = " << number_of_point_clouds_received << std::endl;
+	  flag_new_hokuyo_data_ = true;
+  }
 
   this->hokuyo_mutex_exit ();
 }
