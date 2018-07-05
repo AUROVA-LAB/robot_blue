@@ -12,6 +12,12 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   tf
+  iri_base_algorithm
+  sensor_msgs
+  pcl_ros
+  pcl_conversions
+  laser_geometry
+  ackermann_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -109,6 +115,14 @@ catkin_package(
 #  LIBRARIES blue_package
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
+ CATKIN_DEPENDS 
+   iri_base_algorithm
+   std_msgs
+   sensor_msgs
+   pcl_ros
+   pcl_conversions
+   laser_geometry
+   ackermann_msgs
 )
 
 ###########
@@ -117,10 +131,9 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
+include_directories(src/reactive_hokuyo/include)
+include_directories(${catkin_INCLUDE_DIRS})
+include_directories(${PCL_INCLUDE_DIRS})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -201,4 +214,8 @@ include_directories(
 # catkin_add_nosetests(test)
 
 add_executable(ackermann_to_odom src/ackermann_to_odom/ackermann_to_odom.cpp)
+add_executable(reactive_hokuyo_alg src/reactive_hokuyo/src/reactive_hokuyo_alg.cpp src/reactive_hokuyo/src/reactive_hokuyo_alg_node.cpp)
+
 target_link_libraries(ackermann_to_odom ${catkin_LIBRARIES})
+target_link_libraries(reactive_hokuyo_alg ${catkin_LIBRARIES})
+target_link_libraries(reactive_hokuyo_alg ${PCL_LIBRARIES})

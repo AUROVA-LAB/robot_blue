@@ -8,15 +8,16 @@
 #include <pcl/segmentation/sac_segmentation.h>
 
 
-ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode (void) :
-    algorithm_base::IriBaseAlgorithm<ReactiveHokuyoAlgorithm> ()
+ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode(void) :
+  algorithm_base::IriBaseAlgorithm<ReactiveHokuyoAlgorithm>()
 {
+  //init class attributes if necessary
 	flag_new_hokuyo_data_ = false;
 
 	time_to_reach_min_allowed_distance_ = 2.0;
 	safety_distance_to_stop_vehicle_    = 0.25;
 
-	z_threshold_ = -1.0 * ( SENSOR_HEIGHT_ - MIN_OBSTACLE_HEIGHT_ );
+	z_threshold_ = MIN_OBSTACLE_HEIGHT_;
 
 	abs_lateral_safety_margin_ = 0.2;
 
@@ -26,20 +27,37 @@ ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode (void) :
 	min_obstacle_radius_             = 0.02;
 
 	closest_obstacle_point_ = IMPOSSIBLE_RANGE_VALUE_;
+	steering_angle_ = 0.0;
 
 	max_velocity_recommendation_ = STOP_VEHICLE_;
 
 	this->loop_rate_ = 500;
 
-	// Init subscribers
-	this->hokuyo_subscriber_ = this->public_node_handle_.subscribe ("/scan", 1, &ReactiveHokuyoAlgNode::hokuyo_callback, this);
-
-	pthread_mutex_init (&this->hokuyo_mutex_, NULL);
-
-	// Init publishers
+  // [init publishers]
 	this->recommended_velocity_publisher_ = this->public_node_handle_.advertise
 	      < std_msgs::Float32 > ("hokuyo_recommended_velocity", 1);
+  
+	this->pointcloud_publisher_ = this->public_node_handle_.advertise
+	      < sensor_msgs::PointCloud2 > ("pointcloud", 1);
 
+  // [init subscribers]
+	this->hokuyo_subscriber_ = this->public_node_handle_.subscribe ("/scan", 1, &ReactiveHokuyoAlgNode::hokuyo_callback, this);
+
+	this->ackermann_subscriber_ = this->public_node_handle_.subscribe ("/estimated_ackermann_state",1, &ReactiveHokuyoAlgNode::estimatedAckermannStateCB, this);
+
+	pthread_mutex_init (&this->hokuyo_mutex_, NULL);
+  // [init services]
+  
+  // [init clients]
+  
+  // [init action servers]
+  
+  // [init action clients]
+}
+
+ReactiveHokuyoAlgNode::~ReactiveHokuyoAlgNode(void)
+{
+  // [free dynamic memory]
 }
 
 void ReactiveHokuyoAlgNode::mainNodeThread(void)
@@ -47,43 +65,64 @@ void ReactiveHokuyoAlgNode::mainNodeThread(void)
 	this->hokuyo_mutex_enter();
 	if(flag_new_hokuyo_data_)
 	{
+		// [fill msg structures]
 		flag_new_hokuyo_data_ = false;
 		local_copy_of_input_scan_ = input_scan_;
 		this->hokuyo_mutex_exit();
 
-		this->alg_.incorporateSensorPoseInformation(local_copy_of_input_scan_, SENSOR_HEIGHT_, SENSOR_PITCH_DEG_ANGLE_, real_3D_cloud_);
+		this->alg_.incorporateSensorPoseInformation(local_copy_of_input_scan_,
+													SENSOR_HEIGHT_, SENSOR_PITCH_DEG_ANGLE_, steering_angle_,
+													real_3D_cloud_);
 
-		this->alg_.filterNonObstaclePoints(real_3D_cloud_, z_threshold_, obstacle_points_);
+		this->alg_.filterNonObstaclePoints(real_3D_cloud_, z_threshold_, safety_width_, obstacle_points_);
 
 		this->alg_.eliminateSmallClusters(obstacle_points_, euclidean_association_threshold_, min_obstacle_radius_, final_obstacles_);
 
 		this->alg_.findClosestDistance(final_obstacles_, closest_obstacle_point_);
 
-		max_velocity_recommendation_ = ( closest_obstacle_point_ - safety_distance_to_stop_vehicle_ ) / time_to_reach_min_allowed_distance_;
+		max_velocity_recommendation_ = ( closest_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_FRONT_ - safety_distance_to_stop_vehicle_ ) / time_to_reach_min_allowed_distance_;
 
+		if (max_velocity_recommendation_ < 0.0) max_velocity_recommendation_ = 0.0;
+
+		if (max_velocity_recommendation_ > 2.0) max_velocity_recommendation_ = 2.0;
+
+		// [publish messages]
 		recommended_velocity_msg_.data = max_velocity_recommendation_;
-
 		this->recommended_velocity_publisher_.publish (this->recommended_velocity_msg_);
+		pointcloud_msg_ = obstacle_points_;//real_3D_cloud_;
+		this->pointcloud_publisher_.publish (this->pointcloud_msg_);
+
 	}else{
 		this->hokuyo_mutex_exit();
 	}
 }
 
+/*  [subscriber callbacks] */
 
 void ReactiveHokuyoAlgNode::hokuyo_callback (const sensor_msgs::LaserScan::ConstPtr& msg)
 {
   this->hokuyo_mutex_enter ();
 
-  if(strcmp(msg->header.frame_id, "Laser") == 0)
+  //if(strcmp(msg->header.frame_id.c_string(), "Laser") == 0)
+  if(msg->header.frame_id == "laser")
   {
 	  input_scan_ = *msg;
 
 	  //DEBUG!!
-	  std::cout << "Hokuyo scan received!" << std::endl;
+	  //std::cout << "Hokuyo scan received!" << std::endl;
 	  if (msg == NULL) std::cout << std::endl << "Null pointer!!! in function hokuyo_callback!";
 
 	  flag_new_hokuyo_data_ = true;
   }
+
+  this->hokuyo_mutex_exit ();
+}
+
+void ReactiveHokuyoAlgNode::estimatedAckermannStateCB(const ackermann_msgs::AckermannDriveStamped& estimated_ackermann_state_msg)
+{
+  this->hokuyo_mutex_enter ();
+
+  steering_angle_ = estimated_ackermann_state_msg.drive.steering_angle;
 
   this->hokuyo_mutex_exit ();
 }
@@ -96,4 +135,27 @@ void ReactiveHokuyoAlgNode::hokuyo_mutex_enter (void)
 void ReactiveHokuyoAlgNode::hokuyo_mutex_exit (void)
 {
   pthread_mutex_unlock (&this->hokuyo_mutex_);
+}
+
+/*  [service callbacks] */
+
+/*  [action callbacks] */
+
+/*  [action requests] */
+
+void ReactiveHokuyoAlgNode::node_config_update(Config &config, uint32_t level)
+{
+  this->alg_.lock();
+  this->config_=config;
+  this->alg_.unlock();
+}
+
+void ReactiveHokuyoAlgNode::addNodeDiagnostics(void)
+{
+}
+
+/* main function */
+int main(int argc,char *argv[])
+{
+  return algorithm_base::main<ReactiveHokuyoAlgNode>(argc, argv, "reactive_hokuyo_alg_node");
 }
