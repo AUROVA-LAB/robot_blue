@@ -56,7 +56,7 @@ private:
 
 	const float VEHICLE_WIDTH_                 =  0.800;
 	const float ABS_MAX_STEERING_DEG_ANGLE     = 30.000;
-	const float MIN_OBSTACLE_HEIGHT_           =  0.075;
+	const float MIN_OBSTACLE_HEIGHT_           =  0.350;
 
 	// Input
 	bool flag_new_hokuyo_data_;
