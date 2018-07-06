@@ -7,7 +7,7 @@
 <launch>
     <param name="/use_sim_time" value="true" />
 
-    <node pkg="rosbag" type="play" name="rosbagplay" args="/home/mice85/AUROVA/local/2018-06-21\ experimentos/2018-06-21_1.bag --clock -d 5" required="true"/>
+    <node pkg="rosbag" type="play" name="rosbagplay" args="/home/mice85/AUROVA/Local/Datasets/AUROVA/2018-07-06-13-03-40.bag --clock -d 5" required="true"/>
 
     <node name="ekf_odom" pkg="robot_localization" type="ekf_localization_node" clear_params="true">
 
@@ -87,7 +87,7 @@
                                                      0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]</rosparam>
 
     </node>
-<!--
+
     <node name="ekf_map" pkg="robot_localization" type="ekf_localization_node" clear_params="true">
 
       <param name="frequency" value="10"/>
@@ -200,8 +200,8 @@
 
         <remap from="odometry/filtered" to="odometry/filtered_map"/>
         <remap from="gps/fix" to="rover/fix"/>
-        <remap from="imu/data" to="imu_data"/>
+        <!--<remap from="imu/data" to="imu_data"/>-->
 
     </node>
--->
+
 </launch>

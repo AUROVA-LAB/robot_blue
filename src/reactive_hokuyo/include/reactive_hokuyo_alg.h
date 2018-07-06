@@ -25,7 +25,7 @@
 #ifndef _reactive_hokuyo_alg_h_
 #define _reactive_hokuyo_alg_h_
 
-#include <iri_reactive_hokuyo/ReactiveHokuyoConfig.h>
+#include <ReactiveHokuyoConfig.h>
 #include <sensor_msgs/LaserScan.h>
 #include <pcl/point_cloud.h>
 #include <pcl_conversions/pcl_conversions.h>

@@ -135,8 +135,8 @@ int main (int argc, char** argv) {
 
       // Topic publisher
       odometry_publisher.publish(odometry);
-      broadcaster.sendTransform(odom_trans);
-      broadcaster.sendTransform(base_trans);
+      //broadcaster.sendTransform(odom_trans);
+      //broadcaster.sendTransform(base_trans);
 
       ros::spinOnce();
       loop_rate.sleep();
