@@ -132,6 +132,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(src/reactive_hokuyo/include)
+include_directories(src/velocity_recommender/include)
 include_directories(${catkin_INCLUDE_DIRS})
 include_directories(${PCL_INCLUDE_DIRS})
 
@@ -215,7 +216,9 @@ include_directories(${PCL_INCLUDE_DIRS})
 
 add_executable(ackermann_to_odom src/ackermann_to_odom/ackermann_to_odom.cpp)
 add_executable(reactive_hokuyo_alg src/reactive_hokuyo/src/reactive_hokuyo_alg.cpp src/reactive_hokuyo/src/reactive_hokuyo_alg_node.cpp)
+add_executable(velocity_recommender_alg src/velocity_recommender/src/velocity_recommender_alg.cpp src/velocity_recommender/src/velocity_recommender_alg_node.cpp)
 
 target_link_libraries(ackermann_to_odom ${catkin_LIBRARIES})
 target_link_libraries(reactive_hokuyo_alg ${catkin_LIBRARIES})
 target_link_libraries(reactive_hokuyo_alg ${PCL_LIBRARIES})
+target_link_libraries(velocity_recommender_alg ${catkin_LIBRARIES})
