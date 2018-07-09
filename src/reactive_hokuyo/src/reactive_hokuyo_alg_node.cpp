@@ -24,7 +24,7 @@ ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode(void) :
 	safety_width_ = VEHICLE_WIDTH_ + ( 2.0 * abs_lateral_safety_margin_ );
 
 	euclidean_association_threshold_ = 0.10;
-	min_obstacle_radius_             = 0.02;
+	min_obstacle_radius_             = 0.20;
 
 	closest_obstacle_point_ = IMPOSSIBLE_RANGE_VALUE_;
 	steering_angle_ = 0.0;
@@ -89,7 +89,10 @@ void ReactiveHokuyoAlgNode::mainNodeThread(void)
 		// [publish messages]
 		recommended_velocity_msg_.data = max_velocity_recommendation_;
 		this->recommended_velocity_publisher_.publish (this->recommended_velocity_msg_);
-		pointcloud_msg_ = obstacle_points_;//real_3D_cloud_;
+
+		final_obstacles_.header.frame_id = local_copy_of_input_scan_.header.frame_id;
+		final_obstacles_.header.stamp    = local_copy_of_input_scan_.header.stamp;
+		pointcloud_msg_ = final_obstacles_;
 		this->pointcloud_publisher_.publish (this->pointcloud_msg_);
 
 	}else{

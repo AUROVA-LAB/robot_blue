@@ -141,6 +141,9 @@ void ReactiveHokuyoAlgorithm::filterNonObstaclePoints(sensor_msgs::PointCloud2& 
 	toPCLPointCloud2 (*cloud_filtered, output_cloud);
 	pcl_conversions::fromPCL (output_cloud, obstacle_points);
 
+	//Uncomment to bypass
+    //obstacle_points = real_3D_cloud;
+
 }
 
 void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& obstacle_points,
@@ -148,39 +151,114 @@ void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& o
 														sensor_msgs::PointCloud2& final_obstacles)
 {
 	//std::cout << "eliminateSmallClusters" << std::endl;
-/*
-	  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-	  pcl::PCLPointCloud2 cloudPCL;
-	  pcl_conversions::toPCL(obstacle_points_, cloudPCL);
-	  pcl::fromPCLPointCloud2(cloudPCL,*input_cloud);
+	if(!obstacle_points.data.empty())
+	{
+		  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-	  // Creating the KdTree object for the search method of the extraction
-	  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
-	  tree->setInputCloud(input_cloud);
+		  pcl::PCLPointCloud2 cloudPCL;
+		  pcl_conversions::toPCL(obstacle_points, cloudPCL);
+		  pcl::fromPCLPointCloud2(cloudPCL,*input_cloud);
 
-	  std::vector<pcl::PointIndices> cluster_indices;
+		  // Creating the KdTree object for the search method of the extraction
+		  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
+		  tree->setInputCloud(input_cloud);
 
-	  pcl::EuclideanClusterExtraction < pcl::PointXYZ > ec;
-	  ec.setClusterTolerance(euclidean_association_threshold_);
-	  //ec.setMinClusterSize(0);
-	  //ec.setMaxClusterSize(max_num_points);
-	  ec.setSearchMethod(tree);
-	  ec.setInputCloud(input_cloud);
-	  ec.extract(cluster_indices);
+		  std::vector<pcl::PointIndices> cluster_indices;
 
-	  int j = 0;
-	  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
-	  {
-	    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-	    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-	    {
-	    	cloud_cluster->points.push_back (cloud_filtered->points[*pit]);
-	    }
-	    j++;
-	  }
-*/
-	final_obstacles = obstacle_points;
+		  pcl::EuclideanClusterExtraction < pcl::PointXYZ > ec;
+		  ec.setClusterTolerance(euclidean_association_threshold);
+		  //ec.setMinClusterSize(0);
+		  //ec.setMaxClusterSize(max_num_points);
+		  ec.setSearchMethod(tree);
+		  ec.setInputCloud(input_cloud);
+		  ec.extract(cluster_indices);
+
+		  pcl::PointCloud<pcl::PointXYZRGB>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+		  int cluster_num = 0;
+		  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+		  {
+			cluster_num++;
+			pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZRGB>);
+			float x_accum = 0.0;
+			float y_accum = 0.0;
+			float z_accum = 0.0;
+			int   count   = 0;
+			std::cout<<"Cluster num = " << cluster_num << std::endl;
+			for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
+			{
+				pcl::PointXYZRGB point;
+				//cloud_cluster->points.push_back (input_cloud->points[*pit]);
+				point.x = input_cloud->points[*pit].x;
+				point.y = input_cloud->points[*pit].y;
+				point.z = input_cloud->points[*pit].z;
+
+				switch(cluster_num)
+				{
+					case 1:
+						point.r = 255;
+						point.g = 0;
+						point.b = 0;
+						break;
+					case 2:
+						point.r = 0;
+						point.g = 255;
+						point.b = 0;
+						break;
+					case 3:
+						point.r = 0;
+						point.g = 0;
+						point.b = 255;
+						break;
+					default:
+						point.r = 255;
+						point.g = 255;
+						point.b = 255;
+				}
+
+				cloud_cluster->points.push_back (point);
+
+				x_accum += point.x;
+				y_accum += point.y;
+				z_accum += point.z;
+				count++;
+			}
+			if(count > 0)
+			{
+				float x_centroid = x_accum / count;
+				float y_centroid = y_accum / count;
+				float z_centroid = z_accum / count;
+				float max_distance = 0.0;
+
+				for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
+				{
+					float dx = x_centroid - input_cloud->points[*pit].x;
+					float dy = y_centroid - input_cloud->points[*pit].y;
+					float dz = z_centroid - input_cloud->points[*pit].z;
+
+					float distance = sqrt(dx*dx + dy*dy + dz*dz);
+					if(distance > max_distance) max_distance = distance;
+				}
+
+				if( max_distance > min_obstacle_radius)
+				{
+					*filtered_cloud += *cloud_cluster;
+				}else{
+					std::cout << "Cluster discarded, radius = " << max_distance << std::endl;
+				}
+			}else{
+				std::cout << "Warning! in ReactiveHokuyoAlgorithm::eliminateSmallClusters, cluster with zero points!!" << std::endl;
+			}
+			if(cluster_num == 3) cluster_num = 0;
+		  }
+
+		  pcl::PCLPointCloud2 cloud;
+		  toPCLPointCloud2 (*filtered_cloud, cloud);
+		  pcl_conversions::fromPCL (cloud, final_obstacles);
+	}else{
+	  final_obstacles = obstacle_points;
+	}
 }
 
 void ReactiveHokuyoAlgorithm::findClosestDistance(sensor_msgs::PointCloud2& final_obstacles,
