@@ -25,7 +25,7 @@
 #ifndef _velocity_recommender_alg_h_
 #define _velocity_recommender_alg_h_
 
-#include <velocity_recommender/VelocityRecommenderConfig.h>
+#include <VelocityRecommenderConfig.h>
 
 //include velocity_recommender_alg main library
 
