@@ -88,7 +88,7 @@ void VelocityRecommenderAlgNode::mainNodeThread(void)
       // Computing output
 	  // Forward
 	  forward_velocity_recommendation_ = ( min_front_obstacle_distance_ - safety_distance_to_stop_vehicle_ ) / time_to_reach_min_allowed_distance_;
-
+	  //std::cout << forward_velocity_recommendation_ << std::endl;
 	  if (forward_velocity_recommendation_ < 0.0)
 	  {
 		  forward_velocity_recommendation_ = 0.0;
@@ -106,9 +106,10 @@ void VelocityRecommenderAlgNode::mainNodeThread(void)
 		  std::cout<<"WARNING! attempted to set a positive backward velocity!"<<std::endl;
 	  }
 
-	  if (backward_velocity_recommendation_ < -1*MAX_VELOCITY) forward_velocity_recommendation_ = -1*MAX_VELOCITY;
+	  if (backward_velocity_recommendation_ < -1*MAX_VELOCITY) backward_velocity_recommendation_ = -1*MAX_VELOCITY;
 
 	  // [fill msg structures]
+
 	  forward_recommended_velocity_msg_.data = forward_velocity_recommendation_;
 	  backward_recommended_velocity_msg_.data = backward_velocity_recommendation_;
 	  // [publish messages]
