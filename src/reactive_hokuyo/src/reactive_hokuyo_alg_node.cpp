@@ -76,7 +76,7 @@ void ReactiveHokuyoAlgNode::mainNodeThread(void)
 		this->alg_.findClosestDistance(final_obstacles_, closest_obstacle_point_);
 
 		// [publish messages]
-		front_obstacle_distance_msg_.data = closest_obstacle_point_;
+		front_obstacle_distance_msg_.data = closest_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_FRONT_;
 		this->front_obstacle_distance_publisher_.publish (this->front_obstacle_distance_msg_);
 
 		final_obstacles_.header.frame_id = local_copy_of_input_scan_.header.frame_id;
