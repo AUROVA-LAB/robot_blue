@@ -44,7 +44,7 @@ int create_virtual_imu (void)
         // orientation calculations
         roll  = roll_prev  + delta_t*originl_imu_msg.angular_velocity.x;
         pitch = pitch_prev + delta_t*originl_imu_msg.angular_velocity.y;
-        yaw   = yaw_prev   + delta_t*originl_imu_msg.angular_velocity.z;
+        yaw   = yaw_prev   - delta_t*originl_imu_msg.angular_velocity.z;
         roll_prev  = roll;
         pitch_prev = pitch;
         yaw_prev   = yaw;

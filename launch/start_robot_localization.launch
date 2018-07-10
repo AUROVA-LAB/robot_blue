@@ -26,9 +26,9 @@
       <param name="odom0" value="odometry"/>
       <param name="imu0" value="virtual_imu_data"/>
 
-      <rosparam param="odom0_config">[true,  true,  false,
+      <rosparam param="odom0_config">[false, false, false,
                                       false, false, false,
-                                      true,  true, false,
+                                      true,  true,  false,
                                       false, false, false,
                                       false, false, false]</rosparam>
 
@@ -38,7 +38,7 @@
                                      false, false, false,
                                      false, false, false]</rosparam>
 
-      <param name="odom0_differential" value="false"/>
+      <param name="odom0_differential" value="true"/>
       <param name="imu0_differential" value="false"/>
 
       <param name="odom0_relative" value="false"/>
@@ -87,7 +87,7 @@
                                                      0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]</rosparam>
 
     </node>
-<!--
+
     <node name="ekf_map" pkg="robot_localization" type="ekf_localization_node" clear_params="true">
 
       <param name="frequency" value="10"/>
@@ -106,7 +106,7 @@
       <param name="odom1" value="odometry/gps"/>
       <param name="imu0" value="virtual_imu_data"/>
 
-      <rosparam param="odom0_config">[true,  true,  false,
+      <rosparam param="odom0_config">[false, false, false,
                                       false, false, false,
                                       true,  true,  false,
                                       false, false, false,
@@ -124,7 +124,7 @@
                                      false, false, false,
                                      false, false, false]</rosparam>
 
-      <param name="odom0_differential" value="false"/>
+      <param name="odom0_differential" value="true"/>
       <param name="odom1_differential" value="false"/>
       <param name="imu0_differential" value="false"/>
 
@@ -186,7 +186,7 @@
 
         <param name="magnetic_declination_radians" value="0.25772695287784" />  
 
-        <param name="yaw_offset" value="1.570796327" />
+        <param name="yaw_offset" value="-1.570796327" />
 
         <param name="zero_altitude" value="true" />
 
@@ -203,5 +203,5 @@
         <remap from="imu/data" to="virtual_imu_data"/>
         
     </node>
--->
+
 </launch>
