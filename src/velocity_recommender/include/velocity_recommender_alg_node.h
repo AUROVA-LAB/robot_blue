@@ -42,19 +42,25 @@
 class VelocityRecommenderAlgNode : public algorithm_base::IriBaseAlgorithm<VelocityRecommenderAlgorithm>
 {
   private:
+	const float OUT_OF_RANGE = 100.0;
 	const float MAX_VELOCITY = 2.0;
+
+	float time_to_reach_min_allowed_distance_;
+	float safety_distance_to_stop_vehicle_;
 
 	bool flag_new_data_;
 
-	float forward_hokuyo_recommended_velocity_;
-	float forward_velodyne_recommended_velocity_;
-	float forward_local_map_recommended_velocity_;
+	float hokuyo_front_obstacle_distance;
+	float velodyne_front_obstacle_distance_;
+	float local_map_front_obstacle_distance_;
 
+	float min_front_obstacle_distance_;
 	float forward_velocity_recommendation_;
 
-	float backward_velodyne_recommended_velocity_;
-	float backward_local_map_recommended_velocity_;
+	float velodyne_back_obstacle_distance_;
+	float local_map_back_obstacle_distance_;
 
+	float min_back_obstacle_distance_;
 	float backward_velocity_recommendation_;
 
 	// [publisher attributes]

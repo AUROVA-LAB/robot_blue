@@ -14,9 +14,6 @@ ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode(void) :
   //init class attributes if necessary
 	flag_new_hokuyo_data_ = false;
 
-	time_to_reach_min_allowed_distance_ = 2.0;
-	safety_distance_to_stop_vehicle_    = 0.25;
-
 	z_threshold_ = MIN_OBSTACLE_HEIGHT_;
 
 	abs_lateral_safety_margin_ = 0.2;
@@ -26,16 +23,14 @@ ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode(void) :
 	euclidean_association_threshold_ = 0.10;
 	min_obstacle_radius_             = 0.20;
 
-	closest_obstacle_point_ = IMPOSSIBLE_RANGE_VALUE_;
+	closest_obstacle_point_ = OUT_OF_RANGE_;
 	steering_angle_ = 0.0;
-
-	max_velocity_recommendation_ = STOP_VEHICLE_;
 
 	this->loop_rate_ = 500;
 
   // [init publishers]
-	this->recommended_velocity_publisher_ = this->public_node_handle_.advertise
-	      < std_msgs::Float32 > ("hokuyo_recommended_velocity", 1);
+	this->front_obstacle_distance_publisher_ = this->public_node_handle_.advertise
+	      < std_msgs::Float32 > ("front_obstacle_distance", 1);
   
 	this->pointcloud_publisher_ = this->public_node_handle_.advertise
 	      < sensor_msgs::PointCloud2 > ("pointcloud", 1);
@@ -80,15 +75,9 @@ void ReactiveHokuyoAlgNode::mainNodeThread(void)
 
 		this->alg_.findClosestDistance(final_obstacles_, closest_obstacle_point_);
 
-		max_velocity_recommendation_ = ( closest_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_FRONT_ - safety_distance_to_stop_vehicle_ ) / time_to_reach_min_allowed_distance_;
-
-		if (max_velocity_recommendation_ < 0.0) max_velocity_recommendation_ = 0.0;
-
-		if (max_velocity_recommendation_ > 2.0) max_velocity_recommendation_ = 2.0;
-
 		// [publish messages]
-		recommended_velocity_msg_.data = max_velocity_recommendation_;
-		this->recommended_velocity_publisher_.publish (this->recommended_velocity_msg_);
+		front_obstacle_distance_msg_.data = closest_obstacle_point_;
+		this->front_obstacle_distance_publisher_.publish (this->front_obstacle_distance_msg_);
 
 		final_obstacles_.header.frame_id = local_copy_of_input_scan_.header.frame_id;
 		final_obstacles_.header.stamp    = local_copy_of_input_scan_.header.stamp;

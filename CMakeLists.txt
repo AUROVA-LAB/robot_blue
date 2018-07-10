@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_conversions
   laser_geometry
   ackermann_msgs
+  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions
@@ -96,10 +97,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+  cfg/ReactiveHokuyo.cfg
+  cfg/VelocityRecommender.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -123,6 +124,7 @@ catkin_package(
    pcl_conversions
    laser_geometry
    ackermann_msgs
+   dynamic_reconfigure
 )
 
 ###########
@@ -218,7 +220,13 @@ add_executable(ackermann_to_odom src/ackermann_to_odom/ackermann_to_odom.cpp)
 add_executable(reactive_hokuyo_alg src/reactive_hokuyo/src/reactive_hokuyo_alg.cpp src/reactive_hokuyo/src/reactive_hokuyo_alg_node.cpp)
 add_executable(velocity_recommender_alg src/velocity_recommender/src/velocity_recommender_alg.cpp src/velocity_recommender/src/velocity_recommender_alg_node.cpp)
 
+#add_dependencies(reactive_hokuyo_alg ${PROJECT_NAME}_gencfg)
+#add_dependencies(velocity_recommender_alg ${PROJECT_NAME}_gencfg)
+
 target_link_libraries(ackermann_to_odom ${catkin_LIBRARIES})
 target_link_libraries(reactive_hokuyo_alg ${catkin_LIBRARIES})
 target_link_libraries(reactive_hokuyo_alg ${PCL_LIBRARIES})
 target_link_libraries(velocity_recommender_alg ${catkin_LIBRARIES})
+
+add_dependencies(velocity_recommender_alg ${${PROJECT_NAME}_EXPORTED_TARGETS})
+add_dependencies(reactive_hokuyo_alg ${${PROJECT_NAME}_EXPORTED_TARGETS})

@@ -25,8 +25,7 @@
 #ifndef _velocity_recommender_alg_h_
 #define _velocity_recommender_alg_h_
 
-#include <VelocityRecommenderConfig.h>
-
+#include <blue_package/VelocityRecommenderConfig.h>
 //include velocity_recommender_alg main library
 
 /**
@@ -54,7 +53,8 @@ class VelocityRecommenderAlgorithm
     * Define a Config type with the VelocityRecommenderConfig. All driver implementations
     * will then use the same variable type Config.
     */
-    typedef velocity_recommender::VelocityRecommenderConfig Config;
+    //typedef velocity_recommender::VelocityRecommenderConfig Config;
+    typedef blue_package::VelocityRecommenderConfig Config;
 
    /**
     * \brief config variable
@@ -74,8 +74,7 @@ class VelocityRecommenderAlgorithm
     */
     VelocityRecommenderAlgorithm(void);
 
-   /**
-    * \brief Lock Algorithm
+   /**    * \brief Lock Algorithm
     *
     * Locks access to the Algorithm class
     */

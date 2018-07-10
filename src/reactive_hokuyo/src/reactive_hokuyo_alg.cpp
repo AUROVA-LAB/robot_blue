@@ -16,13 +16,7 @@
 #include <pcl/common/transforms.h>
 
 #include <pcl/filters/extract_indices.h>
-//#include <pcl/filters/voxel_grid.h>
 #include <pcl/kdtree/kdtree.h>
-//#include <pcl/sample_consensus/method_types.h>
-//#include <pcl/sample_consensus/model_types.h>
-//#include <pcl/segmentation/sac_segmentation.h>
-//#include <pcl/segmentation/extract_clusters.h>
-//#include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/segmentation/conditional_euclidean_clustering.h>
 
 
@@ -51,7 +45,7 @@ void ReactiveHokuyoAlgorithm::incorporateSensorPoseInformation(sensor_msgs::Lase
 																float sensor_height, float sensor_pitch_deg_angle, float steering_deg_angle,
 																sensor_msgs::PointCloud2& real_3D_cloud_)
 {
-	std::cout << "incorporateSensorPoseInformation" << std::endl;
+	//std::cout << "incorporateSensorPoseInformation" << std::endl;
 
 	// We convert the laser scan to 3D pointcloud
 	projector_.projectLaser(local_copy_of_input_scan_, real_3D_cloud_);
@@ -115,7 +109,7 @@ void ReactiveHokuyoAlgorithm::filterNonObstaclePoints(sensor_msgs::PointCloud2& 
 														float z_threshold, float vehicle_width,
 														sensor_msgs::PointCloud2& obstacle_points)
 {
-	std::cout << "filterNonObstaclePoints" << std::endl;
+	//std::cout << "filterNonObstaclePoints" << std::endl;
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr aux (new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -125,18 +119,15 @@ void ReactiveHokuyoAlgorithm::filterNonObstaclePoints(sensor_msgs::PointCloud2& 
     pcl_conversions::toPCL(real_3D_cloud,pcl_pc2);
     pcl::fromPCLPointCloud2(pcl_pc2,*input_cloud);
 
-	//std::cout << "filterNonObstaclePoints" << std::endl;
 	pcl::PassThrough<pcl::PointXYZRGB> pass;
 	pass.setInputCloud (input_cloud);
 	pass.setFilterFieldName ("z");
 	pass.setFilterLimits (z_threshold, 10.0);
-	//pass.setFilterLimitsNegative (true);
 	pass.filter (*aux);
 
 	pass.setInputCloud (aux);
 	pass.setFilterFieldName ("y");
 	pass.setFilterLimits (-1*vehicle_width/2.0, vehicle_width/2.0);
-	//pass.setFilterLimitsNegative (true);
 	pass.filter (*cloud_filtered);
 
 	pcl::PCLPointCloud2 output_cloud;
@@ -152,7 +143,7 @@ void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& o
 														float euclidean_association_threshold, float min_obstacle_radius,
 														sensor_msgs::PointCloud2& final_obstacles)
 {
-	std::cout << "eliminateSmallClusters" << std::endl;
+	//std::cout << "eliminateSmallClusters" << std::endl;
 
 	if(!obstacle_points.data.empty())
 	{
@@ -266,7 +257,7 @@ void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& o
 void ReactiveHokuyoAlgorithm::findClosestDistance(sensor_msgs::PointCloud2& final_obstacles,
 													float& closest_obstacle_point)
 {
-	  std::cout << "findClosestDistance" << std::endl;
+	  //std::cout << "findClosestDistance" << std::endl;
 	  pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
 	  pcl::PCLPointCloud2 cloudPCL;
@@ -276,7 +267,7 @@ void ReactiveHokuyoAlgorithm::findClosestDistance(sensor_msgs::PointCloud2& fina
 	  float x = 0.0;
 	  float y = 0.0;
 	  float distance;
-	  float min_distance = 10000.0;
+	  float min_distance = OUT_OF_RANGE_;
 
 	  for (size_t i = 0; i < input_cloud->points.size(); ++i)
 	  {

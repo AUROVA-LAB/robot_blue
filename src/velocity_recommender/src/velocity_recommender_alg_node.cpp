@@ -5,16 +5,21 @@ VelocityRecommenderAlgNode::VelocityRecommenderAlgNode(void) :
 {
 	flag_new_data_ = false;
   //init class attributes if necessary
-  forward_hokuyo_recommended_velocity_    = MAX_VELOCITY;
-  forward_velodyne_recommended_velocity_  = MAX_VELOCITY;
-  forward_local_map_recommended_velocity_ = MAX_VELOCITY;
+  hokuyo_front_obstacle_distance     = OUT_OF_RANGE;
+  velodyne_front_obstacle_distance_  = OUT_OF_RANGE;
+  local_map_front_obstacle_distance_ = OUT_OF_RANGE;
+  min_front_obstacle_distance_       = OUT_OF_RANGE;
 
-  forward_velocity_recommendation_        = MAX_VELOCITY;
+  forward_velocity_recommendation_   = MAX_VELOCITY;
 
-  backward_velodyne_recommended_velocity_ = MAX_VELOCITY;
-  backward_local_map_recommended_velocity_= MAX_VELOCITY;
+  velodyne_back_obstacle_distance_   = -1*OUT_OF_RANGE;
+  local_map_back_obstacle_distance_  = -1*OUT_OF_RANGE;
+  min_back_obstacle_distance_        = -1*OUT_OF_RANGE;
 
-  backward_velocity_recommendation_       = MAX_VELOCITY;
+  backward_velocity_recommendation_  = -1*MAX_VELOCITY;
+
+  time_to_reach_min_allowed_distance_ = 2.0;
+  safety_distance_to_stop_vehicle_    = 0.25;
 
   this->loop_rate_ = 500.0;//in [Hz]
 
@@ -26,7 +31,7 @@ VelocityRecommenderAlgNode::VelocityRecommenderAlgNode(void) :
 	      < std_msgs::Float32 > ("backward_recommended_velocity", 1);
   
   // [init subscribers]
-  this->reactive_hokuyo_subscriber_ = this->public_node_handle_.subscribe ("/reactive_hokuyo_alg_node/hokuyo_recommended_velocity",
+  this->reactive_hokuyo_subscriber_ = this->public_node_handle_.subscribe ("/reactive_hokuyo_alg_node/front_obstacle_distance",
 		  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  1, &VelocityRecommenderAlgNode::reactive_hokuyo_callback,
 																			  this);
   
@@ -52,34 +57,57 @@ void VelocityRecommenderAlgNode::mainNodeThread(void)
 		flag_new_data_ = false;
 
 	  // Forward
-	  forward_velocity_recommendation_ = MAX_VELOCITY;
-	  if(forward_hokuyo_recommended_velocity_ < forward_velocity_recommendation_)
+	  min_front_obstacle_distance_ = OUT_OF_RANGE;
+	  if(hokuyo_front_obstacle_distance < min_front_obstacle_distance_)
 	  {
-		  forward_velocity_recommendation_ = forward_hokuyo_recommended_velocity_;
+		  min_front_obstacle_distance_ = hokuyo_front_obstacle_distance;
 	  }
 
-	  if(forward_velodyne_recommended_velocity_ < forward_velocity_recommendation_)
+	  if(velodyne_front_obstacle_distance_ < min_front_obstacle_distance_)
 	  {
-		  forward_velocity_recommendation_ = forward_velodyne_recommended_velocity_;
+		  min_front_obstacle_distance_ = velodyne_front_obstacle_distance_;
 	  }
 
-	  if(forward_local_map_recommended_velocity_ < forward_velocity_recommendation_)
+	  if(local_map_front_obstacle_distance_ < min_front_obstacle_distance_)
 	  {
-		  forward_velocity_recommendation_ = forward_local_map_recommended_velocity_;
+		  min_front_obstacle_distance_ = local_map_front_obstacle_distance_;
 	  }
 
 	  // Backward
-
-	  backward_velocity_recommendation_ = MAX_VELOCITY;
-	  if(backward_velodyne_recommended_velocity_ < backward_velocity_recommendation_)
+	  min_back_obstacle_distance_ = -1*OUT_OF_RANGE;
+	  if(velodyne_back_obstacle_distance_ > min_back_obstacle_distance_)
 	  {
-		  backward_velocity_recommendation_ = backward_velodyne_recommended_velocity_;
+		  min_back_obstacle_distance_ = velodyne_back_obstacle_distance_;
 	  }
 
-	  if(backward_local_map_recommended_velocity_ < backward_velocity_recommendation_)
+	  if(local_map_back_obstacle_distance_ > min_back_obstacle_distance_)
 	  {
-		  backward_velocity_recommendation_ = backward_local_map_recommended_velocity_;
+		  min_back_obstacle_distance_ = local_map_back_obstacle_distance_;
 	  }
+
+      // Computing output
+	  // Forward
+	  forward_velocity_recommendation_ = ( min_front_obstacle_distance_ - safety_distance_to_stop_vehicle_ ) / time_to_reach_min_allowed_distance_;
+
+	  if (forward_velocity_recommendation_ < 0.0)
+	  {
+		  forward_velocity_recommendation_ = 0.0;
+		  std::cout<<"WARNING! attempted to set a negative forward velocity!"<<std::endl;
+	  }
+
+	  if (forward_velocity_recommendation_ > MAX_VELOCITY) forward_velocity_recommendation_ = MAX_VELOCITY;
+
+	  // Backward
+	  backward_velocity_recommendation_ = ( min_back_obstacle_distance_ + safety_distance_to_stop_vehicle_ ) / time_to_reach_min_allowed_distance_;
+
+	  if (backward_velocity_recommendation_ > 0.0)
+	  {
+		  backward_velocity_recommendation_ = 0.0;
+		  std::cout<<"WARNING! attempted to set a positive backward velocity!"<<std::endl;
+	  }
+
+	  if (backward_velocity_recommendation_ < -1*MAX_VELOCITY) forward_velocity_recommendation_ = -1*MAX_VELOCITY;
+
 	  // [fill msg structures]
 	  forward_recommended_velocity_msg_.data = forward_velocity_recommendation_;
 	  backward_recommended_velocity_msg_.data = backward_velocity_recommendation_;
@@ -97,7 +125,7 @@ void VelocityRecommenderAlgNode::reactive_hokuyo_callback(const std_msgs::Float3
 {
 	this->velocity_recommender_mutex_enter ();
 
-	forward_hokuyo_recommended_velocity_ = msg->data;
+	hokuyo_front_obstacle_distance = msg->data;
 	flag_new_data_ = true;
 	//std::cout << "Reactive Hokuyo received!" << std::endl;
 
@@ -125,6 +153,10 @@ void VelocityRecommenderAlgNode::node_config_update(Config &config, uint32_t lev
 {
   this->alg_.lock();
   this->config_=config;
+
+  time_to_reach_min_allowed_distance_ = config_.safety_time;
+  safety_distance_to_stop_vehicle_    = config_.safety_distance;
+
   this->alg_.unlock();
 }
 

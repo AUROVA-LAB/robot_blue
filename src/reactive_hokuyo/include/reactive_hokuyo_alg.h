@@ -25,7 +25,7 @@
 #ifndef _reactive_hokuyo_alg_h_
 #define _reactive_hokuyo_alg_h_
 
-#include <ReactiveHokuyoConfig.h>
+#include <blue_package/ReactiveHokuyoConfig.h>
 #include <sensor_msgs/LaserScan.h>
 #include <pcl/point_cloud.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -41,6 +41,7 @@
 class ReactiveHokuyoAlgorithm
 {
   private:
+	const float OUT_OF_RANGE_ = 100.0;
 	laser_geometry::LaserProjection projector_;
   protected:
    /**
@@ -60,7 +61,8 @@ class ReactiveHokuyoAlgorithm
     * Define a Config type with the ReactiveHokuyoConfig. All driver implementations
     * will then use the same variable type Config.
     */
-    typedef iri_reactive_hokuyo::ReactiveHokuyoConfig Config;
+    //typedef reactive_hokuyo::ReactiveHokuyoConfig Config;
+    typedef blue_package::ReactiveHokuyoConfig Config;
 
    /**
     * \brief config variable

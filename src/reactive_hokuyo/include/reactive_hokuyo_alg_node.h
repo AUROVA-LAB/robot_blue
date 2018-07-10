@@ -46,7 +46,7 @@ class ReactiveHokuyoAlgNode : public algorithm_base::IriBaseAlgorithm<ReactiveHo
 {
 private:
     // Constants
-	const float IMPOSSIBLE_RANGE_VALUE_ = -1.0;
+	const float OUT_OF_RANGE_ = 100.0;
 	const float STOP_VEHICLE_          =  0.0;
 
 	// Constant robot hardware constraints
@@ -69,9 +69,6 @@ private:
 	sensor_msgs::PointCloud2 final_obstacles_;
 
 	// Configurable safety parameters
-	float time_to_reach_min_allowed_distance_;
-	float safety_distance_to_stop_vehicle_;
-
 	float abs_lateral_safety_margin_;
 
 	float z_threshold_;
@@ -84,12 +81,9 @@ private:
 	float closest_obstacle_point_;
 	float steering_angle_;
 
-	// Node output
-	float max_velocity_recommendation_;
-
     // [publisher attributes]
-    ros::Publisher recommended_velocity_publisher_;
-    std_msgs::Float32 recommended_velocity_msg_;
+    ros::Publisher front_obstacle_distance_publisher_;
+    std_msgs::Float32 front_obstacle_distance_msg_;
 
     ros::Publisher pointcloud_publisher_;
     sensor_msgs::PointCloud2 pointcloud_msg_;
