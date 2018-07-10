@@ -31,7 +31,7 @@ VelocityRecommenderAlgNode::VelocityRecommenderAlgNode(void) :
 	      < std_msgs::Float32 > ("backward_recommended_velocity", 1);
   
   // [init subscribers]
-  this->reactive_hokuyo_subscriber_ = this->public_node_handle_.subscribe ("/reactive_hokuyo_alg_node/front_obstacle_distance",
+  this->reactive_hokuyo_subscriber_ = this->public_node_handle_.subscribe ("/reactive_hokuyo_alg/front_obstacle_distance",
 		  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  1, &VelocityRecommenderAlgNode::reactive_hokuyo_callback,
 																			  this);
   
