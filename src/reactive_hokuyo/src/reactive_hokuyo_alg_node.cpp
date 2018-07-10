@@ -16,12 +16,12 @@ ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode(void) :
 
 	z_threshold_ = MIN_OBSTACLE_HEIGHT_;
 
-	abs_lateral_safety_margin_ = 0.2;
+	abs_lateral_safety_margin_ = 0.1;
 
 	safety_width_ = VEHICLE_WIDTH_ + ( 2.0 * abs_lateral_safety_margin_ );
 
-	euclidean_association_threshold_ = 0.10;
-	min_obstacle_radius_             = 0.20;
+	euclidean_association_threshold_ = 0.05;
+	min_obstacle_radius_             = 0.03;
 
 	closest_obstacle_point_ = OUT_OF_RANGE_;
 	steering_angle_ = 0.0;
@@ -139,6 +139,17 @@ void ReactiveHokuyoAlgNode::node_config_update(Config &config, uint32_t level)
 {
   this->alg_.lock();
   this->config_=config;
+
+  abs_lateral_safety_margin_ = config_.lateral_safety_margin;
+
+  //Update the safety width
+  safety_width_ = VEHICLE_WIDTH_ + ( 2.0 * abs_lateral_safety_margin_ );
+
+  z_threshold_ = config_.min_obstacle_height;
+
+  euclidean_association_threshold_ = config_.euclidean_association_threshold;
+
+  min_obstacle_radius_ = config_.min_obstacle_radius;
   this->alg_.unlock();
 }
 
