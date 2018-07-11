@@ -20,7 +20,7 @@ ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode(void) :
 
 	safety_width_ = VEHICLE_WIDTH_ + ( 2.0 * abs_lateral_safety_margin_ );
 
-	euclidean_association_threshold_ = 0.05;
+	euclidean_association_threshold_ = 0.10;
 	min_obstacle_radius_             = 0.03;
 
 	closest_obstacle_point_ = OUT_OF_RANGE_;

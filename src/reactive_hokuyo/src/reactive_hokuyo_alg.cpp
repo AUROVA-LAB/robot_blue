@@ -41,14 +41,14 @@ void ReactiveHokuyoAlgorithm::config_update(Config& config, uint32_t level)
 }
 
 // ReactiveHokuyoAlgorithm Public API
-void ReactiveHokuyoAlgorithm::incorporateSensorPoseInformation(sensor_msgs::LaserScan& local_copy_of_input_scan_,
+void ReactiveHokuyoAlgorithm::incorporateSensorPoseInformation(sensor_msgs::LaserScan& input_laser_scan,
 																float sensor_height, float sensor_pitch_deg_angle, float steering_deg_angle,
-																sensor_msgs::PointCloud2& real_3D_cloud_)
+																sensor_msgs::PointCloud2& output_3D_pointcloud2)
 {
 	//std::cout << "incorporateSensorPoseInformation" << std::endl;
 
 	// We convert the laser scan to 3D pointcloud
-	projector_.projectLaser(local_copy_of_input_scan_, real_3D_cloud_);
+	projector_.projectLaser(input_laser_scan, output_3D_pointcloud2);
 
 	Eigen::Matrix <float, 4, 4> transform;
 
@@ -74,7 +74,7 @@ void ReactiveHokuyoAlgorithm::incorporateSensorPoseInformation(sensor_msgs::Lase
 	transform(3,2) = 0.0;
 	transform(3,3) = 1.0;
 
-	pcl_ros::transformPointCloud(transform,real_3D_cloud_, real_3D_cloud_);
+	pcl_ros::transformPointCloud(transform,output_3D_pointcloud2, output_3D_pointcloud2);
 
 	// We correct the angle to orient the data as if sensor were attached to the steering system
 	float radians_steering_angle = steering_deg_angle * M_PI / 180.0;
@@ -101,70 +101,36 @@ void ReactiveHokuyoAlgorithm::incorporateSensorPoseInformation(sensor_msgs::Lase
 	transform(3,2) = 0.0;
 	transform(3,3) = 1.0;
 
-	pcl_ros::transformPointCloud(transform,real_3D_cloud_, real_3D_cloud_);
+	pcl_ros::transformPointCloud(transform,output_3D_pointcloud2, output_3D_pointcloud2);
 
 }
 
-void ReactiveHokuyoAlgorithm::filterNonObstaclePoints(sensor_msgs::PointCloud2& real_3D_cloud,
-														float z_threshold, float vehicle_width,
-														sensor_msgs::PointCloud2& obstacle_points)
-{
-	//std::cout << "filterNonObstaclePoints" << std::endl;
-
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr aux (new pcl::PointCloud<pcl::PointXYZRGB>);
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
-
-    pcl::PCLPointCloud2 pcl_pc2;
-    pcl_conversions::toPCL(real_3D_cloud,pcl_pc2);
-    pcl::fromPCLPointCloud2(pcl_pc2,*input_cloud);
-
-	pcl::PassThrough<pcl::PointXYZRGB> pass;
-	pass.setInputCloud (input_cloud);
-	pass.setFilterFieldName ("z");
-	pass.setFilterLimits (z_threshold, 10.0);
-	pass.filter (*aux);
-
-	pass.setInputCloud (aux);
-	pass.setFilterFieldName ("y");
-	pass.setFilterLimits (-1*vehicle_width/2.0, vehicle_width/2.0);
-	pass.filter (*cloud_filtered);
-
-	pcl::PCLPointCloud2 output_cloud;
-	toPCLPointCloud2 (*cloud_filtered, output_cloud);
-	pcl_conversions::fromPCL (output_cloud, obstacle_points);
-
-	//Uncomment to bypass
-    //obstacle_points = real_3D_cloud;
-
-}
-
-void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& obstacle_points,
+void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& input_pointcloud2,
 														float euclidean_association_threshold, float min_obstacle_radius,
-														sensor_msgs::PointCloud2& final_obstacles)
+														sensor_msgs::PointCloud2& output_pointcloud2)
 {
 	//std::cout << "eliminateSmallClusters" << std::endl;
 
-	if(!obstacle_points.data.empty())
+	if(!input_pointcloud2.data.empty())
 	{
-		  pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+		  pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud_pcl(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-		  pcl::PCLPointCloud2 cloudPCL;
-		  pcl_conversions::toPCL(obstacle_points, cloudPCL);
-		  pcl::fromPCLPointCloud2(cloudPCL,*input_cloud);
+		  pcl::PCLPointCloud2 aux_input;
+		  pcl_conversions::toPCL(input_pointcloud2, aux_input);
+		  pcl::fromPCLPointCloud2(aux_input,*input_cloud_pcl);
 
 		  // Creating the KdTree object for the search method of the extraction
 		  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
-		  tree->setInputCloud(input_cloud);
+		  tree->setInputCloud(input_cloud_pcl);
 
 		  std::vector<pcl::PointIndices> cluster_indices;
 
 		  pcl::EuclideanClusterExtraction < pcl::PointXYZRGB > ec;
 		  ec.setClusterTolerance(euclidean_association_threshold);
-		  //ec.setMinClusterSize(0);
+		  ec.setMinClusterSize(2);
 		  //ec.setMaxClusterSize(max_num_points);
 		  ec.setSearchMethod(tree);
-		  ec.setInputCloud(input_cloud);
+		  ec.setInputCloud(input_cloud_pcl);
 		  ec.extract(cluster_indices);
 
 		  pcl::PointCloud<pcl::PointXYZRGB>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -182,10 +148,10 @@ void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& o
 			for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
 			{
 				pcl::PointXYZRGB point;
-				//cloud_cluster->points.push_back (input_cloud->points[*pit]);
-				point.x = input_cloud->points[*pit].x;
-				point.y = input_cloud->points[*pit].y;
-				point.z = input_cloud->points[*pit].z;
+				//cloud_cluster->points.push_back (input_cloud_pcl->points[*pit]);
+				point.x = input_cloud_pcl->points[*pit].x;
+				point.y = input_cloud_pcl->points[*pit].y;
+				point.z = input_cloud_pcl->points[*pit].z;
 
 				switch(cluster_num)
 				{
@@ -226,9 +192,9 @@ void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& o
 
 				for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
 				{
-					float dx = x_centroid - input_cloud->points[*pit].x;
-					float dy = y_centroid - input_cloud->points[*pit].y;
-					float dz = z_centroid - input_cloud->points[*pit].z;
+					float dx = x_centroid - input_cloud_pcl->points[*pit].x;
+					float dy = y_centroid - input_cloud_pcl->points[*pit].y;
+					float dz = z_centroid - input_cloud_pcl->points[*pit].z;
 
 					float distance = sqrt(dx*dx + dy*dy + dz*dz);
 					if(distance > max_distance) max_distance = distance;
@@ -246,22 +212,55 @@ void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& o
 			if(cluster_num == 3) cluster_num = 0;
 		  }
 
-		  pcl::PCLPointCloud2 cloud;
-		  toPCLPointCloud2 (*filtered_cloud, cloud);
-		  pcl_conversions::fromPCL (cloud, final_obstacles);
+		  pcl::PCLPointCloud2 aux_output;
+		  toPCLPointCloud2 (*filtered_cloud, aux_output);
+		  pcl_conversions::fromPCL (aux_output, output_pointcloud2);
 	}else{
-	  final_obstacles = obstacle_points;
+	  output_pointcloud2 = input_pointcloud2;
 	}
 }
 
-void ReactiveHokuyoAlgorithm::findClosestDistance(sensor_msgs::PointCloud2& final_obstacles,
-													float& closest_obstacle_point)
+void ReactiveHokuyoAlgorithm::filterNonObstaclePoints(sensor_msgs::PointCloud2& input_pointcloud2,
+														float z_threshold, float vehicle_width,
+														sensor_msgs::PointCloud2& output_poincloud2)
+{
+	//std::cout << "filterNonObstaclePoints" << std::endl;
+
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr aux (new pcl::PointCloud<pcl::PointXYZRGB>);
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
+
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(input_pointcloud2,pcl_pc2);
+    pcl::fromPCLPointCloud2(pcl_pc2,*input_cloud);
+
+	pcl::PassThrough<pcl::PointXYZRGB> pass;
+	pass.setInputCloud (input_cloud);
+	pass.setFilterFieldName ("z");
+	pass.setFilterLimits (z_threshold, 10.0);
+	pass.filter (*aux);
+
+	pass.setInputCloud (aux);
+	pass.setFilterFieldName ("y");
+	pass.setFilterLimits (-1*vehicle_width/2.0, vehicle_width/2.0);
+	pass.filter (*cloud_filtered);
+
+	pcl::PCLPointCloud2 output_cloud;
+	toPCLPointCloud2 (*cloud_filtered, output_cloud);
+	pcl_conversions::fromPCL (output_cloud, output_poincloud2);
+
+	//Uncomment to bypass
+    //output_poincloud2 = input_pointcloud2;
+
+}
+
+void ReactiveHokuyoAlgorithm::findClosestDistance(sensor_msgs::PointCloud2& input_pointcloud2,
+													float& closest_distance)
 {
 	  //std::cout << "findClosestDistance" << std::endl;
 	  pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-
 	  pcl::PCLPointCloud2 cloudPCL;
-	  pcl_conversions::toPCL(final_obstacles, cloudPCL);
+	  pcl_conversions::toPCL(input_pointcloud2, cloudPCL);
 	  pcl::fromPCLPointCloud2(cloudPCL,*input_cloud);
 
 	  float x = 0.0;
@@ -281,5 +280,5 @@ void ReactiveHokuyoAlgorithm::findClosestDistance(sensor_msgs::PointCloud2& fina
 		}
 	  }
 
-	  closest_obstacle_point = min_distance;
+	  closest_distance = min_distance;
 }

@@ -135,20 +135,20 @@ class ReactiveHokuyoAlgorithm
     */
     ~ReactiveHokuyoAlgorithm(void);
 
-	void incorporateSensorPoseInformation(sensor_msgs::LaserScan& local_copy_of_input_scan,
+	void incorporateSensorPoseInformation(sensor_msgs::LaserScan& input_laser_scan,
 											float sensor_height, float sensor_pitch_deg_angle, float steering_deg_angle,
-											sensor_msgs::PointCloud2& real_3D_cloud);
+											sensor_msgs::PointCloud2& output_3D_pointcloud2);
 
-	void filterNonObstaclePoints(sensor_msgs::PointCloud2& real_3D_cloud,
-									float z_threshold, float vehicle_width,
-									sensor_msgs::PointCloud2& obstacle_points);
-
-	void eliminateSmallClusters(sensor_msgs::PointCloud2& obstacle_points,
+	void eliminateSmallClusters(sensor_msgs::PointCloud2& input_pointcloud2,
 									float euclidean_association_threshold, float min_obstacle_radius,
-									sensor_msgs::PointCloud2& final_obstacles);
+									sensor_msgs::PointCloud2& output_pointcloud2);
 
-	void findClosestDistance(sensor_msgs::PointCloud2& final_obstacles,
-								float& closest_obstacle_point);
+	void filterNonObstaclePoints(sensor_msgs::PointCloud2& input_pointcloud2,
+									float z_threshold, float vehicle_width,
+									sensor_msgs::PointCloud2& output_poincloud2);
+
+	void findClosestDistance(sensor_msgs::PointCloud2& input_pointcloud2,
+								float& closest_distance);
 };
 
 #endif
