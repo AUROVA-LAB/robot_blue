@@ -113,19 +113,19 @@ void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& i
 
 	if(!input_pointcloud2.data.empty())
 	{
-		  pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud_pcl(new pcl::PointCloud<pcl::PointXYZRGB>);
+		  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_pcl(new pcl::PointCloud<pcl::PointXYZ>);
 
 		  pcl::PCLPointCloud2 aux_input;
 		  pcl_conversions::toPCL(input_pointcloud2, aux_input);
 		  pcl::fromPCLPointCloud2(aux_input,*input_cloud_pcl);
 
 		  // Creating the KdTree object for the search method of the extraction
-		  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
+		  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
 		  tree->setInputCloud(input_cloud_pcl);
 
 		  std::vector<pcl::PointIndices> cluster_indices;
 
-		  pcl::EuclideanClusterExtraction < pcl::PointXYZRGB > ec;
+		  pcl::EuclideanClusterExtraction < pcl::PointXYZ > ec;
 		  ec.setClusterTolerance(euclidean_association_threshold);
 		  ec.setMinClusterSize(2);
 		  //ec.setMaxClusterSize(max_num_points);
@@ -144,7 +144,9 @@ void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& i
 			float y_accum = 0.0;
 			float z_accum = 0.0;
 			int   count   = 0;
-			std::cout<<"Cluster num = " << cluster_num << std::endl;
+
+			//std::cout<<"Cluster num = " << cluster_num << std::endl;
+
 			for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
 			{
 				pcl::PointXYZRGB point;
@@ -204,7 +206,7 @@ void ReactiveHokuyoAlgorithm::eliminateSmallClusters(sensor_msgs::PointCloud2& i
 				{
 					*filtered_cloud += *cloud_cluster;
 				}else{
-					std::cout << "Cluster discarded, radius = " << max_distance << std::endl;
+					//std::cout << "Cluster discarded, radius = " << max_distance << std::endl;
 				}
 			}else{
 				std::cout << "Warning! in ReactiveHokuyoAlgorithm::eliminateSmallClusters, cluster with zero points!!" << std::endl;
