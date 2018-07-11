@@ -69,9 +69,9 @@ void ReactiveHokuyoAlgNode::mainNodeThread(void)
 													SENSOR_HEIGHT_, SENSOR_PITCH_DEG_ANGLE_, steering_angle_,
 													real_3D_cloud_);
 
-		this->alg_.filterNonObstaclePoints(real_3D_cloud_, z_threshold_, safety_width_, obstacle_points_);
+		this->alg_.eliminateSmallClusters(real_3D_cloud_, euclidean_association_threshold_, min_obstacle_radius_, obstacle_points_);
 
-		this->alg_.eliminateSmallClusters(obstacle_points_, euclidean_association_threshold_, min_obstacle_radius_, final_obstacles_);
+		this->alg_.filterNonObstaclePoints(obstacle_points_, z_threshold_, safety_width_, final_obstacles_);
 
 		this->alg_.findClosestDistance(final_obstacles_, closest_obstacle_point_);
 

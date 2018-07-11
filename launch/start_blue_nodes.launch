@@ -10,8 +10,8 @@
 
 <include file="$(find blue_package)/launch/start_ublox.launch" />
 
-<node pkg="blue_package" type="reactive_hokuyo_alg" name="reactive_hokuyo_alg" />
+<node pkg="blue_package" type="reactive_hokuyo_alg" name="reactive_hokuyo_alg_node" />
 
-<node pkg="blue_package" type="velocity_recommender_alg" name="velocity_recommender_alg" />
+<node pkg="blue_package" type="velocity_recommender_alg" name="velocity_recommender_alg_node" />
 
 </launch>
