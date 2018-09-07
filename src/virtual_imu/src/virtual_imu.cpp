@@ -53,7 +53,7 @@ void gpsCallback(const geometry_msgs::TwistWithCovarianceStamped& gps_msg)
   }
 
   yaw = yaw - yaw_offset;
-  estimation_rpy->correct(0.0, 0.0, yaw);
+  //estimation_rpy->correct(0.0, 0.0, yaw);
 
   //debug
   //ROS_INFO("yaw: [%f]", yaw);

@@ -40,115 +40,121 @@
  */
 class ReactiveHokuyoAlgorithm
 {
-  private:
-	const float OUT_OF_RANGE_ = 100.0;
-	laser_geometry::LaserProjection projector_;
-  protected:
-   /**
-    * \brief define config type
-    *
-    * Define a Config type with the ReactiveHokuyoConfig. All driver implementations
-    * will then use the same variable type Config.
-    */
-    pthread_mutex_t access_;    
+private:
+  const float OUT_OF_RANGE_ = 100.0;
+  laser_geometry::LaserProjection projector_;
+protected:
+  /**
+   * \brief define config type
+   *
+   * Define a Config type with the ReactiveHokuyoConfig. All driver implementations
+   * will then use the same variable type Config.
+   */
+  pthread_mutex_t access_;
 
-    // private attributes and methods
+  // private attributes and methods
 
-  public:
-   /**
-    * \brief define config type
-    *
-    * Define a Config type with the ReactiveHokuyoConfig. All driver implementations
-    * will then use the same variable type Config.
-    */
-    //typedef reactive_hokuyo::ReactiveHokuyoConfig Config;
-    typedef blue_package::ReactiveHokuyoConfig Config;
+public:
+  /**
+   * \brief define config type
+   *
+   * Define a Config type with the ReactiveHokuyoConfig. All driver implementations
+   * will then use the same variable type Config.
+   */
+  //typedef reactive_hokuyo::ReactiveHokuyoConfig Config;
+  typedef blue_package::ReactiveHokuyoConfig Config;
 
-   /**
-    * \brief config variable
-    *
-    * This variable has all the driver parameters defined in the cfg config file.
-    * Is updated everytime function config_update() is called.
-    */
-    Config config_;
+  /**
+   * \brief config variable
+   *
+   * This variable has all the driver parameters defined in the cfg config file.
+   * Is updated everytime function config_update() is called.
+   */
+  Config config_;
 
-   /**
-    * \brief constructor
-    *
-    * In this constructor parameters related to the specific driver can be
-    * initalized. Those parameters can be also set in the openDriver() function.
-    * Attributes from the main node driver class IriBaseDriver such as loop_rate,
-    * may be also overload here.
-    */
-    ReactiveHokuyoAlgorithm(void);
+  /**
+   * \brief constructor
+   *
+   * In this constructor parameters related to the specific driver can be
+   * initalized. Those parameters can be also set in the openDriver() function.
+   * Attributes from the main node driver class IriBaseDriver such as loop_rate,
+   * may be also overload here.
+   */
+  ReactiveHokuyoAlgorithm(void);
 
-   /**
-    * \brief Lock Algorithm
-    *
-    * Locks access to the Algorithm class
-    */
-    void lock(void) { pthread_mutex_lock(&this->access_); };
+  /**
+   * \brief Lock Algorithm
+   *
+   * Locks access to the Algorithm class
+   */
+  void lock(void)
+  {
+    pthread_mutex_lock(&this->access_);
+  }
+  ;
 
-   /**
-    * \brief Unlock Algorithm
-    *
-    * Unlocks access to the Algorithm class
-    */
-    void unlock(void) { pthread_mutex_unlock(&this->access_); };
+  /**
+   * \brief Unlock Algorithm
+   *
+   * Unlocks access to the Algorithm class
+   */
+  void unlock(void)
+  {
+    pthread_mutex_unlock(&this->access_);
+  }
+  ;
 
-   /**
-    * \brief Tries Access to Algorithm
-    *
-    * Tries access to Algorithm
-    * 
-    * \return true if the lock was adquired, false otherwise
-    */
-    bool try_enter(void) 
-    { 
-      if(pthread_mutex_trylock(&this->access_)==0)
-        return true;
-      else
-        return false;
-    };
+  /**
+   * \brief Tries Access to Algorithm
+   *
+   * Tries access to Algorithm
+   *
+   * \return true if the lock was adquired, false otherwise
+   */
+  bool try_enter(void)
+  {
+    if (pthread_mutex_trylock(&this->access_) == 0)
+      return true;
+    else
+      return false;
+  }
+  ;
 
-   /**
-    * \brief config update
-    *
-    * In this function the driver parameters must be updated with the input
-    * config variable. Then the new configuration state will be stored in the 
-    * Config attribute.
-    *
-    * \param new_cfg the new driver configuration state
-    *
-    * \param level level in which the update is taken place
-    */
-    void config_update(Config& config, uint32_t level=0);
+  /**
+   * \brief config update
+   *
+   * In this function the driver parameters must be updated with the input
+   * config variable. Then the new configuration state will be stored in the
+   * Config attribute.
+   *
+   * \param new_cfg the new driver configuration state
+   *
+   * \param level level in which the update is taken place
+   */
+  void config_update(Config& config, uint32_t level = 0);
 
-    // here define all reactive_hokuyo_alg interface methods to retrieve and set
-    // the driver parameters
+  // here define all reactive_hokuyo_alg interface methods to retrieve and set
+  // the driver parameters
 
-   /**
-    * \brief Destructor
-    *
-    * This destructor is called when the object is about to be destroyed.
-    *
-    */
-    ~ReactiveHokuyoAlgorithm(void);
+  /**
+   * \brief Destructor
+   *
+   * This destructor is called when the object is about to be destroyed.
+   *
+   */
+  ~ReactiveHokuyoAlgorithm(void);
 
-	void incorporateSensorPoseInformation(sensor_msgs::LaserScan& input_laser_scan,
-											float sensor_height, float sensor_pitch_deg_angle, float steering_deg_angle,
-											sensor_msgs::PointCloud2& output_3D_pointcloud2);
+  void incorporateSensorPoseInformation(sensor_msgs::LaserScan& input_laser_scan, float sensor_height,
+                                        float sensor_pitch_deg_angle, float steering_deg_angle,
+                                        sensor_msgs::PointCloud2& output_3D_pointcloud2);
 
-	void eliminateSmallClusters(sensor_msgs::PointCloud2& input_pointcloud2,
-									float euclidean_association_threshold, float min_obstacle_radius,
-									sensor_msgs::PointCloud2& output_pointcloud2);
+  void eliminateSmallClusters(sensor_msgs::PointCloud2& input_pointcloud2, float euclidean_association_threshold,
+                              float min_obstacle_radius, sensor_msgs::PointCloud2& output_pointcloud2);
 
-	void filterNonObstaclePoints(sensor_msgs::PointCloud2& input_pointcloud2,
-									float z_threshold, float vehicle_width,
-									sensor_msgs::PointCloud2& output_poincloud2);
+  void filterNonObstaclePoints(sensor_msgs::PointCloud2& input_pointcloud2, float z_threshold, float vehicle_width,
+                               sensor_msgs::PointCloud2& output_poincloud2);
 
-	void findClosestDistance(sensor_msgs::PointCloud2& input_pointcloud2,
-								float& closest_distance);
+  void findClosestDistance(sensor_msgs::PointCloud2& input_pointcloud2, float& closest_distance);
 };
 
 #endif
