@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+  <include file="$(find robot_blue)/launch/components/start_velodyne.launch" />
+
+  <include file="$(find robot_blue)/launch/components/start_hokuyo.launch" />
+
+  <include file="$(find robot_blue)/launch/components/start_imu.launch" />
+
+  <include file="$(find robot_blue)/launch/components/start_arduino.launch" />
+
+  <include file="$(find robot_blue)/launch/components/start_tf.launch" />
+
+</launch>

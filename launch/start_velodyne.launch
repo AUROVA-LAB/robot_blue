@@ -1,5 +1,0 @@
-<launch>
-
-<include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch" />
-
-</launch>

@@ -87,14 +87,6 @@
   <origin rpy="0.0 0.0 0.0" xyz="-0.13 0.0 -0.025"/>
 </joint>
 
-<!--
-<joint name="gps_to_base" type="fixed">
-  <parent link="gps"/>
-  <child link="base_link"/>
-  <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
-</joint>
--->
-
 <joint name="base_to_gps" type="fixed">
   <parent link="base_link"/>
   <child link="gps"/>
