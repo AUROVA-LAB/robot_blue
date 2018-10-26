@@ -1,5 +1,5 @@
 # blue_package
-This package contains the .launch files needed to launch the sensors and actuators of the BLUE mobile robotics research platform.It also has a .urdf transformation file and the corresponding .launch file that launches it.
+This package contains the .launch files needed to launch the sensors and actuators of the BLUE mobile robotics research platform. It also has a .urdf transformation file and the corresponding .launch file that launches it.
 
 ![BLUE_picture](/images/blue.jpg)
 
