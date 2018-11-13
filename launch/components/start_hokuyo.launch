@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <launch>
 
-  <node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node" />
+  <node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node" >
 
-  <param name="hokuyo_node/calibrate_time"  value="false" />
-
-  <param name="hokuyo_node/port"  value="/dev/hokuyo" />
+    <param name="calibrate_time"  value="false" />
+    <param name="port"  value="/dev/hokuyo" />
+    
+    <remap from="scan" to="hokuyo" />
+    
+  </node>
 
 </launch>

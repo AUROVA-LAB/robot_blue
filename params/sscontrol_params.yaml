@@ -2,11 +2,8 @@
 #-constats for steering control
 ku_d: -8.0
 ku_a: -0.5
-
-#-constats for speed control
-kv_d: -8.0
-kv_a: -0.5
+max_steering: 25.0
 
 #-base for speed (in m/s)
 v_base: 0.4
-v_max: 0.8
+v_max: 1.0
