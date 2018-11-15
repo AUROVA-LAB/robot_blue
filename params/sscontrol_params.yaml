@@ -5,5 +5,5 @@ ku_a: -0.5
 max_steering: 25.0
 
 #-base for speed (in m/s)
-v_base: 0.4
+v_base: 0.6
 v_max: 1.0
