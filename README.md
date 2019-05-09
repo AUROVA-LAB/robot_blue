@@ -2,7 +2,7 @@
 This package contains the files needed to launch all the components necessaries to run the BLUE mobile robotics research platform in the ROS environment. Each directory of each package contains:
 
 ### Launch files
-This directory contains the files necessaries to run all the sensors and actuators, both separatelly and all together.
+This directory contains the files necessaries to run all the sensors and actuators, both separatelly and all together. This file depends on the ROS packages that contais the drivers for each sensor/actuator.
 
 ### Parameters
 This directory contains the .yaml files that include the adjustment parameters related with this robot, but used by other ROS packages. In this case, the directory contains two files with the robot parameters requiered by [ACML package](http://wiki.ros.org/amcl), and [aurova_control](https://github.com/AUROVA-LAB/aurova_control) respectively.
