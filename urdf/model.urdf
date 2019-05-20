@@ -36,7 +36,7 @@
   
 </link>
 
-<link name='laser'>
+<link name='camera_link'>
 
   <visual name='visual'>
     <geometry>
@@ -75,9 +75,9 @@
   <origin rpy="0.0 0.0 0.0" xyz="0.55 0.0 0.645"/>
 </joint>
 
-<joint name="base_to_hokuyo" type="fixed">
+<joint name="base_to_camera" type="fixed">
   <parent link="base_link"/>
-  <child link="laser"/>
+  <child link="camera_link"/>
   <origin rpy="0.0 0.15 0.0" xyz="1.05 0.0 0.187"/>
 </joint>
 
