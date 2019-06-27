@@ -78,7 +78,7 @@
 <joint name="base_to_camera" type="fixed">
   <parent link="base_link"/>
   <child link="camera_link"/>
-  <origin rpy="0.0 0.15 0.0" xyz="1.05 0.0 0.187"/>
+  <origin rpy="-0.02 0.0 0.06" xyz="0.455 -0.02 0.68"/>
 </joint>
 
 <joint name="base_to_imu" type="fixed">
