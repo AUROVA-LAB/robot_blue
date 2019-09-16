@@ -5,6 +5,8 @@
 
   <include file="$(find robot_blue)/launch/components/start_camera.launch" />
 
-  <include file="$(find robot_blue)/launch/components/start_tf.launch" />
+  <include file="$(find robot_blue)/launch/components/start_imu.launch" />
+
+  <include file="$(find robot_blue)/launch/components/start_arduino.launch" />
 
 </launch>
