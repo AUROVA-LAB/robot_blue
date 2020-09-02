@@ -3,6 +3,7 @@
 ku_d: -8.0
 ku_a: -0.5
 max_steering: 25.0
+d_vehicle: 1.08
 
 #-base for speed (in m/s)
 v_base: 0.6
