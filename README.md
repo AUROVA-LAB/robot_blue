@@ -27,6 +27,22 @@ Citation:
 }
 ``` 
 
+Muñoz–Bañón, M. Á., del Pino, I., Candelas, F. A., & Torres, F. (2019). Framework for fast experimental testing of autonomous navigation algorithms. Applied Sciences, 9(10), 1997.
+
+Citation:
+``` 
+@article{munoz2019framework,
+  title={Framework for fast experimental testing of autonomous navigation algorithms},
+  author={Mu{\~n}oz--Ba{\~n}{\'o}n, Miguel {\'A} and del Pino, Iv{\'a}n and Candelas, Francisco A and Torres, Fernando},
+  journal={Applied Sciences},
+  volume={9},
+  number={10},
+  pages={1997},
+  year={2019},
+  publisher={Multidisciplinary Digital Publishing Institute}
+}
+``` 
+
 **The hardware components contained in this platform are:** sensor Lidar 3D Velodyne  VPL16, sensor Lidar 2D Hokuyo UBG-04LX-F01, camera  RGBD Intel Realsense D435, GPS-RTK Ublox M8P, and sensor IMU CHR-UM7. It also contains a generic module for the robotization of ackermann vehicles developed by the AUROVA group.
 
 ![BLUE_picture](/images/blue.jpg)
