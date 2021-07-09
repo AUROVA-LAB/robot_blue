@@ -13,6 +13,20 @@ This files contains all the transformations between base_link of robot to each s
 ### Publications
 del Pino, I., Munoz-Banon, M. A., Cova-Rocamora, S., Contreras, M. A., Candelas, F. A., & Torres, F. (2020). Deeper in BLUE. Journal of Intelligent & Robotic Systems, 98(1), 207-225.
 
+Citation:
+``` 
+@article{del2020deeper,
+  title={Deeper in BLUE},
+  author={del Pino, Ivan and Munoz-Banon, Miguel A and Cova-Rocamora, Saul and Contreras, Miguel A and Candelas, Francisco A and Torres, Fernando},
+  journal={Journal of Intelligent \& Robotic Systems},
+  volume={98},
+  number={1},
+  pages={207--225},
+  year={2020},
+  publisher={Springer}
+}
+``` 
+
 **The hardware components contained in this platform are:** sensor Lidar 3D Velodyne  VPL16, sensor Lidar 2D Hokuyo UBG-04LX-F01, camera  RGBD Intel Realsense D435, GPS-RTK Ublox M8P, and sensor IMU CHR-UM7. It also contains a generic module for the robotization of ackermann vehicles developed by the AUROVA group.
 
 ![BLUE_picture](/images/blue.jpg)
