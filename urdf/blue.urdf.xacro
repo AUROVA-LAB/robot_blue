@@ -8,36 +8,32 @@
    </material>
    <material name="gray">
     <color rgba="0.5 0.5 0.5 1.0"/>
-   </material>   
+   </material>  
+      <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+   </material>  
    <material name="flat_black">
     <color rgba="0 0 0 1"/>
-   </material> 
-
-   <link name="world" />   
+   </material>
+  
    <link name="base_link"/>
 
-  <joint name="world_joint" type="fixed">
-    <parent link="world" />
-    <child link="base_link" />
-    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 1.57" />
-  </joint>
-
   <joint name="blue_joint" type="fixed">
-    <parent link="world" />
+    <parent link="base_link" />
     <child link = "blue" />
-    <origin xyz="-0.4 -1.22 -0.435" rpy="1.57 0 1.57" />
+    <origin xyz="1.22 -0.4 -0.435" rpy="1.57 0 3.14" />
   </joint>
 
   <link name="blue">
     <visual>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/base_alero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/base_alero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/base_alero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/base_alero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
     <inertial>
@@ -49,21 +45,49 @@
   </link>
 
   <joint name="velodyne_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="velodyne"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.55 0.0 0.645"/>
+  </joint>
+
+  <link name="velodyne"/>
+
+  <joint name="gps_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="gps"/>
+    <origin xyz="0.82 -0.25 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+
+  <link name='gps'>
+    <visual>
+      <geometry>
+        <cylinder length="0.05" radius="0.07"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.05" radius="0.07"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="velodyne_visual_joint" type="fixed">
     <parent link="blue" />
-    <child link = "velodyne" />
+    <child link = "velodyne_visual" />
     <origin xyz="-0.1 0 0.4" rpy="-1.57 0 0" />
   </joint>
 
-  <link name="velodyne">
+  <link name="velodyne_visual">
     <visual>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/velodyne.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/velodyne.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/velodyne.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/velodyne.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
     <inertial>
@@ -84,13 +108,13 @@
   <link name="eje_delantero">
     <visual>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/eje_delantero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/eje_delantero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/eje_delantero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/eje_delantero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
     <inertial>
@@ -110,13 +134,13 @@
   <link name="rueda_derecha">
     <visual>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/rueda_d.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/rueda_d.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="flat_black"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/rueda_d.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/rueda_d.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
     <inertial>
@@ -136,13 +160,13 @@
   <link name="rueda_derecha_disco">
     <visual>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/aro_delantero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/aro_delantero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/aro_delantero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/aro_delantero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
     <inertial>
@@ -162,13 +186,13 @@
   <link name="rueda_izquierda">
     <visual>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/rueda_i.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/rueda_i.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="flat_black"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/rueda_i.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/rueda_i.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
     <inertial>
@@ -188,13 +212,13 @@
   <link name="rueda_izquierda_disco">
     <visual>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/aro_delantero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/aro_delantero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/aro_delantero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/aro_delantero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
     <inertial>
@@ -214,13 +238,13 @@
   <link name="eje_trasero">
     <visual>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/eje_trasero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/eje_trasero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/eje_trasero.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/eje_trasero.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
     <inertial>
@@ -240,13 +264,13 @@
   <link name="rueda_trasera">
     <visual>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/rueda_trasera.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/rueda_trasera.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="flat_black"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://blue_robot/meshes/rueda_trasera.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_blue/urdf/meshes/rueda_trasera.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
     <inertial>
