@@ -9,6 +9,8 @@
 
   <include file="$(find robot_blue)/launch/components/start_arduino.launch" />
 
+  <include file="$(find robot_blue)/launch/components/start_harxon.launch" />
+
   <!--<include file="$(find robot_blue)/launch/components/start_ublox.launch" /> -->
 
   <include file="$(find robot_blue)/launch/components/start_tf.launch" />
