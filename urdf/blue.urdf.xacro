@@ -44,13 +44,13 @@
     </inertial>
   </link>
 
-  <joint name="velodyne_joint" type="fixed">
+  <joint name="os_sensor_joint" type="fixed">
     <parent link="base_link"/>
-    <child link="velodyne"/>
+    <child link="os_sensor"/>
     <origin rpy="0.0 0.0 0.0" xyz="0.55 0.0 0.645"/>
   </joint>
 
-  <link name="velodyne"/>
+  <link name="os_sensor"/>
 
   <joint name="gps_joint" type="fixed">
     <parent link="base_link"/>
@@ -72,13 +72,13 @@
     </collision>
   </link>
 
-  <joint name="velodyne_visual_joint" type="fixed">
+  <joint name="os_sensor_visual_joint" type="fixed">
     <parent link="blue" />
-    <child link = "velodyne_visual" />
+    <child link = "os_sensor_visual" />
     <origin xyz="-0.1 0 0.4" rpy="-1.57 0 0" />
   </joint>
 
-  <link name="velodyne_visual">
+  <link name="os_sensor_visual">
     <visual>
       <geometry>
         <mesh filename="package://robot_blue/urdf/meshes/velodyne.stl" scale="0.001 0.001 0.001"/>
