@@ -5,7 +5,7 @@
     
     <!-- <param name="port"  value="/dev/arduino" />-->
     <!-- <param name="port"  value="/dev/ttyACM0" />-->
-    <param name="port"  value="/dev/arduino_BLUE" />
+    <param name="port"  value="/dev/blue/arduino" />
     <param name="baud"  value="57600" />
   
   </node>
