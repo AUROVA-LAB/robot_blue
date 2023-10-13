@@ -19,6 +19,9 @@
 
  <!--<include file="$(find robot_blue)/launch/components/start_multiGNSS.launch" />-->
 
+  <include file="$(find robot_blue)/launch/components/start_imuXsense.launch" />
+ 
+
 
 
 </launch>
