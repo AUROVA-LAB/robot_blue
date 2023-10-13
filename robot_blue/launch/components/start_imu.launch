@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-  <node pkg="um7" type="um7_driver" name="um7_driver">
+  <node pkg="um7" type="um7_driver" name="um7_driver" output="log">
 
     <param name="port"  value="/dev/blue_imuCLEAR" />
     <param name="mag_updates" value="false" />
