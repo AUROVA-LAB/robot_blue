@@ -6,6 +6,9 @@
     <param name="port"  value="/dev/blue_imuCLEAR" />
     <param name="mag_updates" value="false" />
 
+    <!-- Configura la redirección de la salida de advertencias para el nodo -->
+    <env name="ROSCONSOLE_STDOUT_LINE_BUFFERED" value="1"/>
+
   </node>
 
 </launch>
