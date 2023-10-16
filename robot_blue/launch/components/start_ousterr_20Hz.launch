@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+  <include file="$(find ouster_ros)/launch/sensor.launch" >
+    <arg name="sensor_hostname" default="172.18.34.151" />
+    <arg name="lidar_mode" default="512x20" />
+    <arg name="timestamp_mode" default="TIME_FROM_ROS_TIME"/>
+    <arg name="viz" default="false"/>
+  </include>
+</launch>
