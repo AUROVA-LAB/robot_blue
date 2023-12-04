@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+  <include file="$(find robot_blue)/launch/components/start_ouster.launch" />
+
+  <!-- <include file="$(find robot_blue)/launch/components/start_arduino.launch" /> -->
+
+  <include file="$(find robot_blue)/launch/components/start_harxon.launch" />
+
+  <include file="$(find robot_blue)/launch/components/start_tf.launch" />
+
+
+
+</launch>
