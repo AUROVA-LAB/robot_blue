@@ -3,7 +3,7 @@
 
   <include file="$(find robot_blue)/launch/components/start_ouster.launch" />
 
-  <!-- <include file="$(find robot_blue)/launch/components/start_arduino.launch" /> -->
+  <include file="$(find robot_blue)/launch/components/start_arduino.launch" />
 
   <include file="$(find robot_blue)/launch/components/start_harxon.launch" />
 
