@@ -4,10 +4,13 @@
   <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
     <arg name="color_width"         default="1280"/>
     <arg name="color_height"        default="720"/>
-    <arg name="depth_fps"           default="30"/>
-    <arg name="infra_fps"           default="30"/>
-    <arg name="color_fps"           default="30"/>
+    <arg name="depth_fps"           default="15"/>
+    <arg name="infra_fps"           default="15"/>
+    <arg name="color_fps"           default="15"/>
     <arg name="align_depth"         default="true"/>
+    <arg name="enable_gyro"         default="true"/>
+    <arg name="enable_accel"        default="true"/>
+    <arg name="enable_sync"         default="true"/>
   </include>
 
 </launch>
