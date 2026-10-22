@@ -64,6 +64,14 @@
     </collision>
   </link>
 
+  <joint name="os_sensor_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="os_sensor"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.55 0.0 0.645"/>
+  </joint>
+
+  <link name="os_sensor"/>
+
   <joint name="os_sensor_visual_joint" type="fixed">
     <parent link="blue" />
     <child link = "os_sensor_visual" />
